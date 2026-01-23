@@ -127,9 +127,9 @@ class Block_timesformer(nn.Module):
     
         ## Temporal
         xt = rearrange(x, '(b t) h w c -> (b h w) t c', t=T, h=H, w=W) 
-        res_temporal = self.temporal_attn(self.temporal_norm1(xt))
-        res_temporal = rearrange(res_temporal, '(b h w) t m -> (b t) h w m', h = H, w = W, t=T)
-        res_temporal = self.temporal_fc(res_temporal)
+        # res_temporal = self.temporal_attn(self.temporal_norm1(xt))
+        # res_temporal = rearrange(res_temporal, '(b h w) t m -> (b t) h w m', h = H, w = W, t=T)
+        # res_temporal = self.temporal_fc(res_temporal)
 
         if self.with_cross_frame_attention:
             # print('we have cross_frame_attention')
@@ -137,9 +137,7 @@ class Block_timesformer(nn.Module):
         # else:
         #     print('we do not have cross_frame_attention')
 
-
-
-        xt = x + res_temporal
+        xt = x #+ res_temporal
         
         ## Spatial
         res_spatial = self.attn(self.norm1(xt))

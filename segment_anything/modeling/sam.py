@@ -96,11 +96,12 @@ class Sam(nn.Module):
           else:
             text_prompt_feature = None
           
-          box_prompt_feature = batched_input["box_prompt"].cuda()
-          if self.box_prompt == 'two' or self.box_prompt == 'one':
+          if self.box_prompt:
             box_prompt_feature = batched_input["box_prompt"].cuda()
-            if self.box_prompt == 'one':
-              box_prompt_feature = box_prompt_feature[:,0,:] # only use the first box
+            if self.box_prompt == 'two' or self.box_prompt == 'one':
+              box_prompt_feature = batched_input["box_prompt"].cuda()
+              if self.box_prompt == 'one':
+                box_prompt_feature = box_prompt_feature[:,0,:] # only use the first box
           else:
             box_prompt_feature = None
           

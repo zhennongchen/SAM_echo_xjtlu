@@ -15,6 +15,7 @@ import SAM_echo_xjtlu.data_loader.random_aug as random_aug
 
 
 # main function:
+
 class Dataset_CMR(torch.utils.data.Dataset):
     def __init__(
             self, 
@@ -86,34 +87,34 @@ class Dataset_CMR(torch.utils.data.Dataset):
         f = self.index_array[index]
         image_filename = self.image_file_list[f]
         seg_filename = self.seg_file_list[f]
-        print('loading image file:', image_filename, ' seg file:', seg_filename)
+        # print('loading image file:', image_filename, ' seg file:', seg_filename)
 
         # check if manual seg exists
         if os.path.isfile(seg_filename) is False:
             self.have_manual_seg = False
         else:
             self.have_manual_seg = True
-        
-       
+        # print('have manual seg?', self.have_manual_seg)
+    
 
         # if it's a new case, then do the data loading; if it's not, then just use the current data
         if image_filename != self.current_image_file or seg_filename != self.current_seg_file:
-            image_loaded = self.load_file(image_filename, segmentation_load = False) 
+            self.image_loaded = self.load_file(image_filename, segmentation_load = False) 
 
             if self.have_manual_seg is True:
-                seg_loaded = self.load_file(seg_filename, segmentation_load = True) 
+                self.seg_loaded = self.load_file(seg_filename, segmentation_load = True) 
             else:
-                seg_loaded = np.zeros(image_loaded.shape, dtype = np.int)
+                self.seg_loaded = np.zeros(image_loaded.shape, dtype = np.int)
 
 
         # center crop
         if self.have_manual_seg is True:
             # find centroid based on the segmenation class 1
-            _,_, self.centroid = Data_processing.center_crop( image_loaded, seg_loaded, self.image_shape, according_to_which_class = self.center_crop_according_to_which_class , centroid = None)
+            _,_, self.centroid = Data_processing.center_crop( self.image_loaded, self.seg_loaded, self.image_shape, according_to_which_class = self.center_crop_according_to_which_class , centroid = None)
 
         elif self.have_manual_seg is False:
             # center is the image center
-            self.centroid = [image_loaded.shape[0]//2, image_loaded.shape[1]//2]
+            self.centroid = [self.image_loaded.shape[0]//2, self.image_loaded.shape[1]//2]
 
          # random crop (randomly shift the centroid)
         if self.augment == True and np.random.uniform(0,1)  < self.augment_frequency:
@@ -124,20 +125,20 @@ class Dataset_CMR(torch.utils.data.Dataset):
             centroid_used_for_crop = self.centroid
                 
         # crop this 2D case
-        image_loaded = image_loaded[centroid_used_for_crop[0] - self.image_shape[0]//2 : centroid_used_for_crop[0] + self.image_shape[0]//2,
+        self.image_loaded = self.image_loaded[centroid_used_for_crop[0] - self.image_shape[0]//2 : centroid_used_for_crop[0] + self.image_shape[0]//2,
                                         centroid_used_for_crop[1] - self.image_shape[1]//2 : centroid_used_for_crop[1] + self.image_shape[1]//2 ]
-        seg_loaded = seg_loaded[centroid_used_for_crop[0] - self.image_shape[0]//2 : centroid_used_for_crop[0] + self.image_shape[0]//2,
+        self.seg_loaded = self.seg_loaded[centroid_used_for_crop[0] - self.image_shape[0]//2 : centroid_used_for_crop[0] + self.image_shape[0]//2,
                                         centroid_used_for_crop[1] - self.image_shape[1]//2 : centroid_used_for_crop[1] + self.image_shape[1]//2 ]
         
         # temporarily save our data
         self.current_image_file = image_filename
-        self.current_image_data = np.copy(image_loaded)  
+        self.current_image_data = np.copy(self.image_loaded)  
         self.current_seg_file = seg_filename
-        self.current_seg_data = np.copy(seg_loaded)
+        self.current_seg_data = np.copy(self.seg_loaded)
 
         # augmentation
-        original_image = np.copy(image_loaded)
-        original_seg = np.copy(seg_loaded)
+        original_image = np.copy(self.image_loaded)
+        original_seg = np.copy(self.seg_loaded)
       
         ######## do augmentation
         processed_seg = np.copy(original_seg)
@@ -184,7 +185,11 @@ class Dataset_CMR(torch.utils.data.Dataset):
         if self.image_normalization is True:
             processed_image = Data_processing.normalize_image(processed_image,inverse = False) 
 
-        # print('after augmentation, image min:', np.min(processed_image), ' max:', np.max(processed_image))
+        # now we have 2D images, we want to make it pseudo 3D by adding a new axis in axis = -1
+        processed_image = np.expand_dims(processed_image, axis = -1)
+        processed_seg = np.expand_dims(processed_seg, axis = -1)
+        original_image = np.expand_dims(original_image, axis = -1)
+        original_seg = np.expand_dims(original_seg, axis = -1)
 
         # put into torch tensor
         processed_image = torch.from_numpy(processed_image).float().unsqueeze(0)  # add channel dimension
@@ -197,16 +202,17 @@ class Dataset_CMR(torch.utils.data.Dataset):
         final_dictionary = { "image": processed_image, 
                             "mask": processed_seg,
                             "original_image": original_image,  
-                            "original_seg": original_seg,}
+                            "original_seg": original_seg,
+                            "box_prompt": 'no', #dummy
+                            }
 
 
         return final_dictionary
           
     
-    
     # function: at the end of each epoch, we need to reset the index array
     def on_epoch_end(self):
-        print('now run on_epoch_end function')
+        # print('now run on_epoch_end function')
         self.index_array = self.generate_index_array()
 
         self.current_image_file = None
