@@ -12,21 +12,6 @@ import utils.lr_sched as lr_sched
 import torch.nn.functional as F
 import cineCMR_SAM.functions_collection as ff
 
-import os
-from tqdm import tqdm
-import torch
-import nibabel as nb
-import numpy as np
-from typing import Iterable
-# from tensorboardX import SummaryWriter
-import logging
-from einops import rearrange
-import utils.misc as misc
-import utils.lr_sched as lr_sched
-import torch.nn.functional as F
-import cineCMR_SAM.functions_collection as ff
-
-
 def train_loop(model: torch.nn.Module,
                data_loader_train: Iterable,
                optimizer: torch.optim.Optimizer,

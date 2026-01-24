@@ -10,8 +10,6 @@ from scipy.interpolate import RegularGridInterpolator
 from nibabel.affines import apply_affine
 from scipy.spatial import ConvexHull
 from skimage.draw import polygon2mask
-import re
-import cv2 
 from skimage.measure import label, regionprops
 import torch
 import torch.nn as nn

@@ -3,7 +3,7 @@ import nibabel as nb
 import os
 from skimage.measure import block_reduce
 from scipy import ndimage
-import cineCMR_SAM.functions_collection as ff
+import SAM_echo_xjtlu.functions_collection as ff
 
 
 # function: basic crop or pad

@@ -9,7 +9,7 @@ import logging
 from einops import rearrange
 import utils.misc as misc
 import utils.lr_sched as lr_sched
-import cineCMR_SAM.functions_collection as ff
+import SAM_echo_xjtlu.functions_collection as ff
 
 
 def save_predictions(view_type, batch, output,args, save_folder_patient):
