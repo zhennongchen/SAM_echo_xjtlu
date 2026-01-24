@@ -87,7 +87,7 @@ class Dataset_CMR(torch.utils.data.Dataset):
         f = self.index_array[index]
         image_filename = self.image_file_list[f]
         seg_filename = self.seg_file_list[f]
-        # print('loading image file:', image_filename, ' seg file:', seg_filename)
+
 
         # check if manual seg exists
         if os.path.isfile(seg_filename) is False:
@@ -104,8 +104,7 @@ class Dataset_CMR(torch.utils.data.Dataset):
             if self.have_manual_seg is True:
                 self.seg_loaded = self.load_file(seg_filename, segmentation_load = True) 
             else:
-                self.seg_loaded = np.zeros(image_loaded.shape, dtype = np.int)
-
+                self.seg_loaded = np.zeros(self.image_loaded.shape, dtype = np.int)
 
         # center crop
         if self.have_manual_seg is True:
@@ -203,6 +202,9 @@ class Dataset_CMR(torch.utils.data.Dataset):
                             "mask": processed_seg,
                             "original_image": original_image,  
                             "original_seg": original_seg,
+                            "image_filename": image_filename,
+                            "seg_filename": seg_filename,
+                            "centroid": self.centroid,
                             "box_prompt": 'no', #dummy
                             }
 
