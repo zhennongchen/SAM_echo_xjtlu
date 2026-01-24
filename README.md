@@ -2,6 +2,13 @@
 **Author: Zhennong Chen, PhD**<br />
 
 ## Important Notice
+
+- first and the most important: <br />
+    - step 1: make sure you can run the code successfully in your own laptop <br />
+    - step 2: read and read again the code. Understand what each part does. Find out which part you need to change to fit our project (echo competition) <br />
+    - do not jump to change the code right away without understanding it. you will get lost easily. <br />
+
+
 1. the code needs to be run inside specific environment. please refer to **docker** folder for details.<br />
  - if you fail to install a docker, you can try to manually install the packages in ```docker/docker_SAM/dockerfile``` and ```docker/docker_SAM/requirements.txt``` and  into your conda environment. <br />
  - there is a guideline included. <br />
