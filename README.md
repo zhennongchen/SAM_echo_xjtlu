@@ -24,5 +24,5 @@
 6. the code includes extensive augmentations, use based on what you need! <br />
 
 7. pay attention to your image dimension!
-    - here I center-crop all images to 128x128 (so you need to understand, there are two steps: find a meaningful center and crop; read ```data_loader/generator.py```), and turn the dimension back to each individual case's original size when saving the prediction. <br />
+    - here I center-crop all images to 128x128 (so you need to understand, there are two steps: 1.find a meaningful center and 2.crop; read ```data_loader/generator.py```), and turn the dimension back to each individual case's original size when saving the prediction. <br />
     - maybe you need a different uniform size
